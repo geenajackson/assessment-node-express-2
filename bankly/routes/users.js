@@ -4,7 +4,7 @@ const User = require('../models/user');
 const express = require('express');
 const router = new express.Router();
 const ExpressError = require('../helpers/expressError');
-const { authUser, requireLogin, requireAdmin } = require('../middleware/auth');
+const { authUser, requireLogin, requireAdmin, sameUserOrAdmin } = require('../middleware/auth');
 
 /** GET /
  *
@@ -15,7 +15,7 @@ const { authUser, requireLogin, requireAdmin } = require('../middleware/auth');
  *
  */
 
-router.get('/', authUser, requireLogin, async function(req, res, next) {
+router.get('/', authUser, requireLogin, async function (req, res, next) {
   try {
     let users = await User.getAll();
     return res.json({ users });
@@ -35,7 +35,7 @@ router.get('/', authUser, requireLogin, async function(req, res, next) {
  *
  */
 
-router.get('/:username', authUser, requireLogin, async function(
+router.get('/:username', authUser, requireLogin, async function (
   req,
   res,
   next
@@ -63,7 +63,7 @@ router.get('/:username', authUser, requireLogin, async function(
  *
  */
 
-router.patch('/:username', authUser, requireLogin, requireAdmin, async function(
+router.patch('/:username', authUser, requireLogin, sameUserOrAdmin, async function (
   req,
   res,
   next
@@ -94,7 +94,7 @@ router.patch('/:username', authUser, requireLogin, requireAdmin, async function(
  * If user cannot be found, return a 404 err.
  */
 
-router.delete('/:username', authUser, requireAdmin, async function(
+router.delete('/:username', authUser, requireAdmin, async function (
   req,
   res,
   next
