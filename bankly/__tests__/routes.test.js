@@ -162,6 +162,13 @@ describe("GET /users/[username]", function () {
       phone: "phone1"
     });
   });
+  //TESTS BUG #3
+  test("should return 404 for invalid username", async function () {
+    const response = await request(app)
+      .get("/users/none")
+      .send({ _token: tokens.u1 });
+    expect(response.statusCode).toBe(404);
+  })
 });
 
 describe("PATCH /users/[username]", function () {
@@ -209,10 +216,11 @@ describe("PATCH /users/[username]", function () {
     });
   });
 
+  //TESTS BUG #5
   test("should disallowing patching not-allowed-fields", async function () {
     const response = await request(app)
       .patch("/users/u1")
-      .send({ _token: tokens.u1, admin: true });
+      .send({ _token: tokens.u1, admin: true, username: "newname" });
     expect(response.statusCode).toBe(401);
   });
 
