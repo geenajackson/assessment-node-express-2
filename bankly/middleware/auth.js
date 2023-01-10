@@ -62,7 +62,6 @@ function authUser(req, res, next) {
 function sameUserOrAdmin(req, res, next) {
   try {
     if (!req.curr_admin) {
-      console.log(req.params.username, req.curr_username)
       if (req.curr_username !== req.params.username) {
         return next({ status: 401, message: 'Unauthorized' });
       }
