@@ -57,10 +57,26 @@ function authUser(req, res, next) {
     err.status = 401;
     return next(err);
   }
-} // end
+}
+//FIXES BUG #4
+function sameUserOrAdmin(req, res, next) {
+  try {
+    if (!req.curr_admin) {
+      console.log(req.params.username, req.curr_username)
+      if (req.curr_username !== req.params.username) {
+        return next({ status: 401, message: 'Unauthorized' });
+      }
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+// end
 
 module.exports = {
   requireLogin,
   requireAdmin,
-  authUser
+  authUser,
+  sameUserOrAdmin
 };
