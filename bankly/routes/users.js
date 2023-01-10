@@ -1,5 +1,10 @@
 /** User related routes. */
 
+//FIXES BUG #5
+const jsonschema = require("jsonschema");
+const userUpdateSchema = require("../schemas/userUpdate.json");
+
+
 const User = require('../models/user');
 const express = require('express');
 const router = new express.Router();
@@ -71,6 +76,13 @@ router.patch('/:username', authUser, requireLogin, sameUserOrAdmin, async functi
   try {
     if (!req.curr_admin && req.curr_username !== req.params.username) {
       throw new ExpressError('Only  that user or admin can edit a user.', 401);
+    }
+
+    //FIXES BUG #5
+    const validator = jsonschema.validate(req.body, userUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new ExpressError(errs, 401);
     }
 
     // get fields to change; remove token so we don't try to change it
