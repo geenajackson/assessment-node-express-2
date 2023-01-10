@@ -5,3 +5,5 @@
 - BUG #3: router.get("/users/:username") returns empty JSON and not a 404 for an invalid username.
 
 - BUG #4: router.patch("/users/:username) does not allow logged in user to update own info.
+
+- BUG #5: when fixing BUG #4, router.patch("/users/:username) returns a 200 status code for not allowed fields instead of a 404.
