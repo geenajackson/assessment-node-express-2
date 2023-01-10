@@ -90,6 +90,16 @@ describe("POST /auth/login", function () {
     expect(username).toBe("u1");
     expect(admin).toBe(false);
   });
+  //TESTS BUG #2
+  test("should deny access if wrong password", async function () {
+    const response = await request(app)
+      .post("/auth/login")
+      .send({
+        username: "u1",
+        password: "wrong"
+      });
+    expect(response.statusCode).toBe(401);
+  });
 });
 
 describe("GET /users", function () {
@@ -171,6 +181,22 @@ describe("PATCH /users/[username]", function () {
     const response = await request(app)
       .patch("/users/u1")
       .send({ _token: tokens.u3, first_name: "new-fn1" }); // u3 is admin
+    expect(response.statusCode).toBe(200);
+    expect(response.body.user).toEqual({
+      username: "u1",
+      first_name: "new-fn1",
+      last_name: "ln1",
+      email: "email1",
+      phone: "phone1",
+      admin: false,
+      password: expect.any(String)
+    });
+  });
+  //TESTS BUG #4
+  test("should patch data if same user", async function () {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u1, first_name: "new-fn1" });
     expect(response.statusCode).toBe(200);
     expect(response.body.user).toEqual({
       username: "u1",
